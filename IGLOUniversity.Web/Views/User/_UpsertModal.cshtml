@@ -1,0 +1,176 @@
+﻿<div class="popup-dialog upsert-dialog">
+    <header>
+        <h1>Form User</h1>
+        <a href="javascript:;" class="close-button">
+            <i class="fa fa-close"></i>
+        </a>
+    </header>
+
+    <form method="post" asp-action="Save">
+        <div class="field-row">
+            <label class="idLabel">Id</label>
+            <input type="text" id="id" placeholder="Id" />
+        </div>
+        <div class="field-row">
+            <label>Username</label>
+            <input type="text" id="username" placeholder="Username" />
+        </div>
+        <span data-for="UserName"></span>
+        <div class="field-row">
+            <label>Status</label>
+            <select id="status">
+            </select>
+        </div>
+        <span data-for="Status"></span>
+        <div class="field-row">
+            <label>Admin</label>
+            <input type="checkbox" id="admin" />
+        </div>
+        <div class="field-row">
+            <label>Mahasiswa</label>
+            <select id="mahasiswa">
+            </select>
+        </div>
+        <div class="field-row">
+            <button class="btn btn-success" type="submit" asp-action="Save">Save</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    
+    $("#admin").click(function () {
+        if ($(this).is(':checked')) {
+            $("#mahasiswa").attr("disabled", true);
+            $("#mahasiswa").val("");
+        } else {
+            $("#mahasiswa").attr("disabled", false);
+        }
+    });
+    $(document).ready(function () {              
+
+        $.ajax({
+            type: "GET",
+            url: "/User/GetDropDownStatus",
+            success: function (data) {
+                console.log(data);
+                var option = `<option value="">-- Select Status --</option>`;
+
+                for (var item of data) {
+                    let value = item.stringValue;
+                    let text = item.text;
+
+                    option += `<option value="${value}">${text}</option>`;
+                    $("#status").html(option);
+                }
+            }
+        });
+
+        $.ajax({
+            type: "GET",
+            url: "/User/GetDropDownMahasiswa",
+            success: function (data) {
+                console.log(data);
+                var option = `<option value="">-- Select Mahasiswa --</option>`;
+
+                for (var item of data) {
+                    let value = item.intValue;
+                    let text = item.text;
+
+                    option += `<option value="${value}">${text}</option>`;
+                    $("#mahasiswa").html(option);
+                }
+            }
+        });
+    });
+
+    $(".btn-add").click(function (event) {
+        event.preventDefault();
+        $("#id").val(0);
+        $("#id").hide();
+        $(".field-row > .idLabel").hide();
+        $(".modal-layer").css("display", "flex");
+        $(".upsert-dialog").css("display", "block");
+    });
+
+
+    $(".upsert-dialog form").submit(function (event) {
+        event.preventDefault();
+
+        var id = $("#id").val();
+        var username = $("#username").val();
+        var status = $("#status").val();
+        var isAdmin = document.querySelector("#admin").checked;
+        var mahasiswaId = $('#mahasiswa').val();
+        if(isAdmin.checked){
+
+        }
+        let urlAction = "/User/Save";
+
+        let object = {
+            "id": id,
+            "userName": username,
+            "status": status,
+            "isAdmin": isAdmin,
+            "mahasiswaId": mahasiswaId,
+            "password": "indocyber"
+        };
+
+        var token = $('[name="__RequestVerificationToken"]').val();
+
+        $.ajax({
+            method: "POST",
+            url: urlAction,
+            data: JSON.stringify(object),
+            dataType: "json",
+            contentType: "application/json; charset=utf-8",
+            headers: {
+                "__RequestVerificationToken": token
+            },
+            success: function (result) {
+                console.log(result);
+                if (result.success == true) {
+                    location.reload();
+                }
+                generateValidationMessage(result.validations);
+            },
+            fail: function () { console.log("Fail") },
+            error: function () { console.log("Internal Server Error") }
+        });
+    });
+
+    $(".btn-update").click(function (event) {
+        event.preventDefault();
+
+        document.querySelector("#id").setAttribute("disabled", "true");
+
+        $(".modal-layer").css("display", "flex");
+        $(".upsert-dialog").css("display", "block");
+
+        let urlAction = $(this).attr("href");
+
+        $.ajax({
+            url: urlAction,
+            success: function (result) {
+                console.log(result);
+                document.querySelector("#id").value = result.id;
+                document.querySelector("#username").value = result.userName;
+                document.querySelector("#status").value = result.status;
+                document.querySelector("#admin").checked = result.isAdmin;
+                document.querySelector("#mahasiswa").value = result.mahasiswaId == null ? "" : result.mahasiswaId;
+            }
+        });
+    });
+
+    function generateValidationMessage(validations) {
+        for (let item of validations) {
+            let propName = item.propertyName;
+            let msg = item.messageError;
+
+            var elementSpanSelector = document.querySelector(`.upsert-dialog form [data-for=${propName}]`);
+            elementSpanSelector.style.color = "red";
+            elementSpanSelector.textContent = msg;
+        }
+    }
+
+</script>

@@ -1,0 +1,126 @@
+﻿<div class="popup-dialog upsert-dialog">
+    <header>
+        <h1>Form Matakuliah</h1>
+        <a href="javascript:;" class="close-button">
+            <i class="fa fa-close"></i>
+        </a>
+    </header>
+
+    <form method="post" asp-action="Save">
+        <div class="field-row">
+            <label class="idLabel">Id</label>
+            <input type="text" id="id" placeholder="Id" />
+        </div>
+        <div class="field-row">
+            <label>Nama</label>
+            <input type="text" id="nama" placeholder="Nama" />
+        </div>
+        <span data-for="Nama"></span>
+        <span data-for="error" style="color:red"></span>
+        <div class="field-row">
+            <label>SKS</label>
+            <input type="number" id="sks" placeholder="SKS" />
+        </div>
+        <span data-for="Sks"></span>
+        <span data-for="sks"></span>
+        <div class="field-row">
+            <label>Deskripsi</label>
+            <input type="text" id="deskripsi" placeholder="Deskripsi" />
+        </div>
+        <div class="field-row">
+            <button class="btn btn-success" type="submit" asp-action="Save">Save</button>
+        </div>
+    </form>
+</div>
+
+<script>
+
+    $(".btn-add").click(function (event) {
+        event.preventDefault();
+        $("#id").val(0);
+        $("#id").hide();
+        $("#sks").val(0);
+        $(".field-row > .idLabel").hide();
+        $("#nim").prop("disabled", false);
+        $(".modal-layer").css("display", "flex");
+        $(".upsert-dialog").css("display", "block");
+    });
+
+
+    $(".upsert-dialog form").submit(function (event) {
+        event.preventDefault();
+        var id = document.querySelector("#id").value;
+        var nama = document.querySelector("#nama").value;
+        var sks = document.querySelector("#sks").value;
+        var deskripsi = document.querySelector("#deskripsi").value;
+
+        let urlAction = "/Matakuliah/Save";
+
+        let object = {
+            "id": id,
+            "nama": nama,
+            "sks": sks,
+            "deskripsi": deskripsi,
+        };
+
+        var token = $('[name="__RequestVerificationToken"]').val();
+
+        $.ajax({
+            method: "POST",
+            url: urlAction,
+            data: JSON.stringify(object),
+            dataType: "json",
+            contentType: "application/json; charset=utf-8",
+            headers: {
+                "__RequestVerificationToken": token
+            },
+            success: function (result) {
+                console.log(result);
+                if (result.success == true) {
+                    location.reload();
+                } else if (result.validations == undefined) {
+                    $(`[data-for="error"]`).text(result.message);
+                } else {
+                    generateValidationMessage(result.validations);
+                }
+            },
+            fail: function () { console.log("Fail") },
+            error: function () { console.log("Internal Server Error") }
+        });
+    });
+
+    $(".btn-update").click(function (event) {
+        event.preventDefault();
+        $("#id").show();
+        $(".field-row > .idLabel").show();
+        document.querySelector("#id").setAttribute("disabled", "true");
+
+        $(".modal-layer").css("display", "flex");
+        $(".upsert-dialog").css("display", "block");
+
+        let urlAction = $(this).attr("href");
+
+        $.ajax({
+            url: urlAction,
+            success: function (result) {
+                console.log(result);
+                document.querySelector("#id").value = result.id;
+                document.querySelector("#nama").value = result.nama;
+                document.querySelector("#sks").value = result.sks;
+                document.querySelector("#deskripsi").value = result.deskripsi;
+            }
+        });
+    });
+
+    function generateValidationMessage(validations) {
+        for (let item of validations) {
+            let propName = item.propertyName;
+            let msg = item.messageError;
+
+            var elementSpanSelector = document.querySelector(`.upsert-dialog form [data-for=${propName}]`);
+            elementSpanSelector.style.color = "red";
+            elementSpanSelector.textContent = msg;
+        }
+    }
+
+</script>

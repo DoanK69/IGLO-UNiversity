@@ -1,0 +1,50 @@
+﻿@using IGLOUniversity.ViewModel.DistribusiMatakuliah
+
+@model IndexDistribusiMatakuliahViewModel
+
+@{
+    ViewData["Title"] = "Index Distribusi Matakuliah";
+}
+
+<h2>Atur Rencana Studi</h2>
+
+<table>
+    <thead style="text-align:center;">
+        <tr>
+            <th>Nim</th>
+            <th>Nama</th>
+            <th>Asal SMA</th>
+            <th>Nomor HP</th>
+            <th>Alamat</th>
+            <th>Total SKS</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.GridDistribusi)
+        {
+            <tr>
+                <td>@item.Nim</td>
+                <td>@item.Nama</td>
+                <td>@item.AsalSma</td>
+                <td>@item.NomorHp</td>
+                <td>@item.Alamat</td>
+                <td>@item.TotalSks</td>
+                <td>
+                    <a class="btn btn-detail" asp-action="Detail" asp-route-id="@item.Id">Detail</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+    <tfoot>
+        <tr>
+            <td>Total Data : @Model.TotalData</td>
+            <td colspan="5">
+                @for (int i = 1; i <= Model.TotalHalaman; i++)
+                {
+                    <a class="btn btn-add" asp-action="Index" asp-route-page="@i">@i</a>
+                }
+            </td>
+        </tr>
+    </tfoot>
+</table>
+

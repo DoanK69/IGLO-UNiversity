@@ -1,0 +1,70 @@
+﻿@using IGLOUniversity.ViewModel.User
+
+@model IndexUserViewModel
+
+@{
+    ViewData["Title"] = "Index User";
+}
+
+@section modalDialog{
+    <div class="modal-layer">
+        <partial name="_UpsertModal"></partial>
+        <partial name="_DeleteModal"></partial>
+    </div>
+    <script>
+        $(".close-button").click(function (event) {
+            event.preventDefault();
+            $(".upsert-dialog form span").empty();
+            document.querySelector(".upsert-dialog form").reset();
+            $(".modal-layer").removeAttr("style");
+            $(".popup-dialog").removeAttr("style");
+        });
+    </script>
+}
+<h2>Master User</h2>
+
+<table>
+    <form method="get" asp-action="Index">
+        <div class="field-row">
+            <input type="text" name="search" />
+            <button type="submit">Cari</button>
+        </div>
+    </form>
+    <div class="field-row">
+        <a class="btn btn-add"><i class="fas fa-plus">Tambah User</i></a>
+    </div>
+    <thead style="text-align:center;">
+        <tr>
+            <th>Username</th>
+            <th>Status</th>
+            <th>Admin</th>
+            <th>Mahasiswa</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.GridUser)
+        {
+            <tr>
+                <td>@item.UserName</td>
+                <td>@item.Status</td>
+                <td>@item.IsAdmin</td>
+                <td>@item.Mahasiswa</td>
+                <td>
+                    <a class="btn btn-update" asp-action="Edit" asp-route-id="@item.Id">Ubah</a>
+                    <a class="btn btn-delete" asp-action="Delete" asp-route-id="@item.Id">Hapus</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+    <tfoot>
+        <tr>
+            <td>Total Data : @Model.TotalData</td>
+            <td colspan="5">
+                @for (int i = 1; i <= Model.TotalHalaman; i++)
+                {
+                    <a class="btn btn-add-page" asp-action="Index" asp-route-page="@i">@i</a>
+                }
+            </td>
+        </tr>
+    </tfoot>
+</table>

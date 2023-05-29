@@ -1,0 +1,158 @@
+﻿<div class="popup-dialog upsert-dialog">
+    <header>
+        <h1>Form Mahasiswa</h1>
+        <a href="javascript:;" class="close-button">
+            <i class="fa fa-close"></i>
+        </a>
+    </header>
+
+    <form method="post" asp-action="Save">
+        <div class="field-row">
+            <label class="idLabel">Id</label>
+            <input type="text" id="id" placeholder="Id" />
+        </div>
+        <div class="field-row">
+            <label>Nama Kelas</label>
+            <input type="text" id="nama" placeholder="Nama Kelas" />
+        </div>
+        <span data-for="Nama"></span>
+        <span data-for="error" style="color:red"></span>
+        <div class="field-row">
+            <label>Mata Kuliah</label>
+            <select id="matkul">              
+            </select>
+        </div>
+        <span data-for="IdMatakuliah"></span>
+        <div class="field-row">
+            <label>Semester</label>
+            <input type="text" id="semester" placeholder="Semester" />
+        </div>
+        <div class="field-row">
+            <label>Kapasitas</label>
+            <input type="number" id="kapasitas" placeholder="Kapasitas" />
+        </div>
+        <span data-for="kapasitas"></span>
+        <div class="field-row">
+            <button class="btn btn-success" type="submit" asp-action="Save">Save</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    $(document).ready(function () {
+
+        $.ajax({
+            type: "GET",
+            url: "/Kelas/GetDropDownMatkul",
+            success: function (data) {
+                console.log(data);
+                var option = `<option value="">-- Select Matakuliah --</option>`;
+
+                for (var item of data) {
+                    let value = item.intValue;
+                    let text = item.text;
+
+                    option += `<option value="${value}">${text}</option>`;
+                    $("#matkul").html(option);
+                }
+            }
+        });
+    });
+
+    $(".btn-add").click(function (event) {
+        event.preventDefault();
+        $("#id").val(0);
+        $("#kapasitas").val(0);
+        $("#id").hide();
+        $(".field-row > .idLabel").hide();
+        $("#nim").prop("disabled", false);
+        $(".modal-layer").css("display", "flex");
+        $(".upsert-dialog").css("display", "block");
+    });
+
+
+    $(".upsert-dialog form").submit(function (event) {
+        event.preventDefault();
+        var id = document.querySelector("#id").value;
+        var nama = document.querySelector("#nama").value;
+        var semester = document.querySelector("#semester").value;
+        var kapasitas = document.querySelector("#kapasitas").value;
+        var matkul = document.querySelector("#matkul").value;
+        //if (document.querySelector("#matkul").value == "") {
+        //    matkul =  = "0";
+        //}else{
+        //    matkul = document.querySelector("#matkul").value;
+        //}
+
+        let urlAction = "/Kelas/Save";
+
+        let object = {
+            "id": id,
+            "nama": nama,
+            "idMatakuliah": matkul,
+            "semester": semester,
+            "kapasitas": kapasitas
+        };
+
+        var token = $('[name="__RequestVerificationToken"]').val();
+
+        $.ajax({
+            method: "POST",
+            url: urlAction,
+            data: JSON.stringify(object),
+            dataType: "json",
+            contentType: "application/json; charset=utf-8",
+            headers: {
+                "__RequestVerificationToken": token
+            },
+            success: function (result) {
+                console.log(result);
+                if (result.success == true) {
+                    location.reload();
+                } else if (result.validations == undefined) {
+                    $(`[data-for="error"]`).text(result.message);
+                } else {
+                    generateValidationMessage(result.validations);
+                }
+            },
+            fail: function () { console.log("Fail") },
+            error: function () { console.log("Internal Server Error") }
+        });
+    });
+
+    $(".btn-update").click(function (event) {
+        event.preventDefault();
+        $("#id").show();
+        $(".field-row > .idLabel").show();
+        document.querySelector("#id").setAttribute("disabled", "true");
+
+        $(".modal-layer").css("display", "flex");
+        $(".upsert-dialog").css("display", "block");
+
+        let urlAction = $(this).attr("href");
+
+        $.ajax({
+            url: urlAction,
+            success: function (result) {
+                console.log(result);
+                document.querySelector("#id").value = result.id;
+                document.querySelector("#nama").value = result.nama;
+                document.querySelector("#matkul").value = result.idMatakuliah;
+                document.querySelector("#semester").value = result.semester;
+                document.querySelector("#kapasitas").value = result.kapasitas;
+            }
+        });
+    });
+
+    function generateValidationMessage(validations) {
+        for (let item of validations) {
+            let propName = item.propertyName;
+            let msg = item.messageError;
+
+            var elementSpanSelector = document.querySelector(`.upsert-dialog form [data-for=${propName}]`);
+            elementSpanSelector.style.color = "red";
+            elementSpanSelector.textContent = msg;
+        }
+    }
+
+</script>

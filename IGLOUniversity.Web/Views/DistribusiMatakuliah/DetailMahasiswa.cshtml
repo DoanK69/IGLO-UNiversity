@@ -1,0 +1,86 @@
+﻿@using IGLOUniversity.ViewModel.DistribusiMatakuliah
+
+@model DetailDistribusiViewModel
+
+@{
+    ViewData["Title"] = "Rencan Studi - Ku";
+}
+
+@section modalDialog{
+    <div class="modal-layer">
+        <partial name="_UpsertModalMahasiswa"></partial>
+        <partial name="_DeleteModal"></partial>
+    </div>
+    <script>
+        $(".close-button").click(function (event) {
+            event.preventDefault();
+            $(".upsert-dialog form span").empty();
+            document.querySelector(".upsert-dialog form").reset();
+            $(".modal-layer").removeAttr("style");
+            $(".popup-dialog").removeAttr("style");
+        });
+    </script>
+}
+<table>
+    <tbody>
+        <tr>
+            <td><label>NIM</label></td>
+            <td>@Model.Mahasiswa.Nim</td>
+        </tr>
+        <tr>
+            <td><label>Nama</label></td>
+            <td>@Model.Mahasiswa.NamaLengkap</td>
+        </tr>
+        <tr>
+            <td><label>Asal SMA</label></td>
+            <td>@Model.Mahasiswa.AsalSma</td>
+        </tr>
+        <tr>
+            <td><label>Total SKS</label></td>
+            <td>@Model.Mahasiswa.TotalSks</td>
+        </tr>
+    </tbody>
+</table>
+
+<table>
+    <div class="field-row">
+        <a class="btn btn-add" data-id="@Model.Mahasiswa.Id"><i class="fas fa-plus">Tambah</i></a>
+    </div>
+    <thead style="text-align:center;">
+        <tr>
+            <th>Nama</th>
+            <th>Mata Kuliah</th>
+            <th>SKS</th>
+            <th>Semester</th>
+            <th>Kapasitas</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.GridKelas)
+        {
+            <tr>
+                <td>@item.Nama</td>
+                <td>@item.Matakuliah</td>
+                <td>@item.Sks</td>
+                <td>@item.Semester</td>
+                <td>@item.Kapasitas</td>
+                <td>@item.Status</td>
+                <td>
+                    <a class="btn btn-delete" asp-action="Delete" asp-route-id="@item.Id">Hapus</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+    @*<tfoot>
+    <tr>
+    <td>Total Data : @Model.TotalData</td>
+    <td colspan="5">
+    @for (int i = 1; i <= Model.TotalHalaman; i++)
+    {
+    <a class="btn btn-add" asp-action="Index" asp-route-page="@i">@i</a>
+    }
+    </td>
+    </tr>
+    </tfoot>*@
+</table>

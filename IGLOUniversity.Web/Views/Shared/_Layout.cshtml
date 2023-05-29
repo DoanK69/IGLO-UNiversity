@@ -1,0 +1,76 @@
+﻿@using Basilisk.ViewModel
+@using System.Globalization;
+@{
+    var username = (ViewBag.Username == null) ? "Anonymous" : ViewBag.Username;
+    var role = (ViewBag.Role == null) ? "Guest" : ViewBag.Role;
+    var id = (ViewBag.Id == null) ? "" : ViewBag.Id;
+    var empNumber = (ViewBag.EmployeeNumber == null) ? "" : ViewBag.EmployeeNumber;
+
+    IEnumerable<MenuViewModel> listMenu = (IEnumerable<MenuViewModel>)ViewBag.Menus;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - IGLOUniversity.Web</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/normalize.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/styleModal.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/style.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/IGLOUniversity.Web.styles.css" asp-append-version="true" />
+</head>
+<body>
+    <div class="header">
+        <div class="title">
+        <h1>Selamat Datang di aplikasi Universitas IGLO</h1>
+        </div>
+        <div class="userInfo" style="margin-right:30px">
+            <div>@((ViewBag.Username == null) ? "Anonymous" : ViewBag.Username)</div>
+            <div>@((ViewBag.Role == null) ? "Guest" : ViewBag.Role)</div>
+        </div>
+        <div class="setting" style="margin-right:30px">
+            <a class="btn btn-detail" asp-action="Logout" asp-controller="User"><i class="fa fa-sign-out"></i></a>
+        </div>
+    </div>
+    <div class="content">
+        <div class="grid-menu">
+            <div class="nav">
+                <div class="nav-menu">
+                    @if (listMenu != null)
+                    {
+                        @foreach (var item in listMenu)
+                        {
+                            <div class="nav-item">
+                                <div class="icon">
+                                    <i class="fa-solid fa-user"></i>
+                                </div>
+                                <div class="link">
+                                    <a class="nav-link" asp-controller="@item.Controller" asp-action="@item.Action">@item.Title</a>
+                                </div>
+                            </div>
+                        }
+                    }
+                    
+                </div>
+            </div>
+            <div class="body-content">
+                <main role="main" class="pb-3">
+                    @RenderBody()
+                </main>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+            <span>&copy; @DateTime.Now.ToString("dd, MMMM yyyy", new CultureInfo("id-ID")) - Aplikasi ini dibuat oleh : (Febri)</span>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="https://kit.fontawesome.com/23b1419e82.js" defer asp-append-version="true" crossorigin="anonymous"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+    @RenderSection("modalDialog", required: false)
+</body>
+</html>

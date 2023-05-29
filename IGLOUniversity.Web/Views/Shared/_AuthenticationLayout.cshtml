@@ -1,0 +1,29 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - IGLOUniversity.Web</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/normalize.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/styleFolder.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/style.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/IGLOUniversity.Web.styles.css" asp-append-version="true" />
+</head>
+<body class="authentication-body">
+    <div class="authentication-wrapper">
+        <header class="company-log">
+            <h1 style="text-align:center">
+                Login
+            </h1>
+        </header>
+        <main style="display:flex; justify-content:center;">
+            @RenderBody()
+        </main>
+    </div>
+
+    
+</body>
+</html>
+

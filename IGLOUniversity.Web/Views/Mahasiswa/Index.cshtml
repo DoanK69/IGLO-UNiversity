@@ -1,0 +1,67 @@
+﻿@using IGLOUniversity.ViewModel.Mahasiswa
+
+@model IndexMahasiswaViewModel
+
+@{
+    ViewData["Title"] = "Index Mahasiswa";
+}
+
+@section modalDialog{
+    <div class="modal-layer">
+        <partial name="_UpsertModal"></partial>
+        <partial name="_DeleteModal"></partial>
+    </div>
+    <script>
+        $(".close-button").click(function (event) {
+            event.preventDefault();
+            $(".upsert-dialog form span").empty();
+            document.querySelector(".upsert-dialog form").reset();
+            $(".modal-layer").removeAttr("style");
+            $(".popup-dialog").removeAttr("style");
+        });
+    </script>
+}
+
+<h2>Master Mahasiswa</h2>
+
+<table>
+    <div class="field-row">
+        <a class="btn btn-add"><i class="fas fa-plus">Tambah Mahasiswa</i></a>
+    </div>
+    <thead style="text-align:center;">
+        <tr>
+            <th>NIM</th>
+            <th>Nama</th>
+            <th>Asal SMA</th>
+            <th>Nomor HP</th>
+            <th>Alamat</th>           
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.GridMahasiswa)
+        {
+            <tr>
+                <td>@item.Nim</td>
+                <td>@item.NamaDepan @item.NamaTengah @item.NamaBelakang</td>
+                <td>@item.AsalSma</td>
+                <td>@item.NomorHp</td>
+                <td>@item.Alamat</td>
+                <td>
+                    <a class="btn btn-update" asp-action="Edit" asp-route-id="@item.Id">Ubah</a>
+                    <a class="btn btn-delete" asp-action="Delete" asp-route-id="@item.Id">Hapus</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+    <tfoot>
+        <tr>
+            <td>Total Data : @Model.TotalData</td>
+            <td colspan="5">
+                @for (int i = 1; i <= Model.TotalHalaman; i++)
+                {
+                    <a class="btn btn-add" asp-action="Index" asp-route-page="@i">@i</a>
+                }
+            </td>
+        </tr>
+    </tfoot>
+</table>

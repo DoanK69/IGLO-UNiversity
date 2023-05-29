@@ -1,0 +1,144 @@
+﻿<div class="popup-dialog upsert-dialog">
+    <header>
+        <h1>Form Mahasiswa</h1>
+        <a href="javascript:;" class="close-button">
+            <i class="fa fa-close"></i>
+        </a>
+    </header>
+
+    <form method="post" asp-action="Save">
+        <span id="error" style="color:red"></span>
+        <div class="field-row">
+            <label class="idLabel">Id</label>
+            <input type="text" id="id" placeholder="Id" />
+            <input type="text" id="idMahasiswa" hidden />
+        </div>
+        <div class="field-row">
+            <label>Kelas</label>
+            <select id="kelas">
+            </select>
+        </div>
+        <span data-for="Kelas"></span>
+        <div class="field-row">
+            <label>Kapasitas</label>
+            <label id="kapasitas"></label>
+        </div>
+        <span data-for="Kapasitas"></span>
+        <div class="field-row">
+            <label>Status</label>
+            <label id="status"></label>
+        </div>
+        <span data-for="Status"></span>
+        <div class="field-row">
+            <button class="btn btn-success" type="submit" asp-action="Save">Save</button>
+        </div>
+    </form>
+</div>
+
+<script>
+
+    $(document).ready(function () {
+
+        $.ajax({
+            type: "GET",
+            url: "/DistribusiMatakuliah/GetDropDownKelas",
+            success: function (data) {
+                console.log(data);
+                var option = `<option value="">-- Select Kelas --</option>`;
+                var status = $("#status").text("Aktif");
+                for (var item of data) {
+                    let value = item.intValue;
+                    let text = item.text;
+
+                    option += `<option value="${value}">${text}</option>`;
+                    $("#kelas").html(option);
+                }
+            }
+        });
+    });
+
+    $("#kelas").change(function (event){
+        $.ajax({
+            type: "GET",
+            url: "/DistribusiMatakuliah/GetDropDownKelas",
+            success: function (data) {
+                console.log(data);
+
+                for (var item of data) {
+                    if($("#kelas").val() == item.intValue){
+                        $("#kapasitas").text(item.longValue);
+                    }
+                    
+                }
+            }
+        });
+    });
+
+    $(".btn-add").click(function (event) {
+        event.preventDefault();
+        $("#idMahasiswa").val(this.dataset.id);
+        $("#id").val(0);
+        $("#id").hide();
+        $(".field-row > .idLabel").hide();
+        $(".modal-layer").css("display", "flex");
+        $(".upsert-dialog").css("display", "block");
+    });
+
+
+    $(".upsert-dialog form").submit(function (event) {
+        event.preventDefault();
+        var id = document.querySelector("#id").value;
+        var idMahasiswa = document.querySelector("#idMahasiswa").value;
+        var kelas = document.querySelector("#kelas").value;
+        var kapasitas = document.querySelector("#kapasitas").textContent;
+        var status = document.querySelector("#status").textContent;
+
+        let urlAction = "/DistribusiMatakuliah/Save";
+
+        let object = {
+            "id": id,
+            "idMahasiswa": idMahasiswa,
+            "idKelas": kelas,
+            "kapasitas" : kapasitas,
+            "status": status,
+        };
+
+        var token = $('[name="__RequestVerificationToken"]').val();
+
+        $.ajax({
+            method: "POST",
+            url: urlAction,
+            data: JSON.stringify(object),
+            dataType: "json",
+            contentType: "application/json; charset=utf-8",
+            headers: {
+                "__RequestVerificationToken": token
+            },
+            success: function (result) {
+                console.log(result);
+                if (result.success == true) {
+                    location.reload();
+                }
+                else
+                {
+                    $("#error").text(result.message);
+                    generateValidationMessage(result.validations);
+                }              
+            },
+            fail: function () { console.log("Fail") },
+            error: function () { console.log("Internal Server Error") }
+        });
+    });
+
+    function generateValidationMessage(validations) {
+        for (let item of validations) {
+            let propName = item.propertyName;
+            let msg = item.messageError;
+
+            var elementSpanSelector = document.querySelector(`.upsert-dialog form [data-for=${propName}]`);
+            elementSpanSelector.style.color = "red";
+            elementSpanSelector.textContent = msg;
+        }
+    }
+
+</script>

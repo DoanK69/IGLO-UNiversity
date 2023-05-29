@@ -1,0 +1,36 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v6.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v6.0": {
+      "IGLOUniversity.Utility/1.0.0": {
+        "dependencies": {
+          "IGLOUniversity.ViewModel": "1.0.0"
+        },
+        "runtime": {
+          "IGLOUniversity.Utility.dll": {}
+        }
+      },
+      "IGLOUniversity.ViewModel/1.0.0": {
+        "runtime": {
+          "IGLOUniversity.ViewModel.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "IGLOUniversity.Utility/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "IGLOUniversity.ViewModel/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}
